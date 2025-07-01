@@ -3,43 +3,48 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
 
+  // Fetch todos from the backend
   useEffect(() => {
-    // Get todos from the server
-    axios.get("http://localhost:3001/todos")
-      .then(function(response) {
-        setTodos(response.data); // The response directly contains the todos array
-      })
-      .catch(function(error) {
-        console.error("There was an error fetching the todos!", error);
-      });
+    axios.get('http://localhost:3001/todos')
+      .then(response => setTodos(response.data))
+      .catch(error => console.error('Error fetching todos:', error));
   }, []);
 
+  // Add a new todo
   const addTodo = () => {
-    // Post new todo to the server
-    axios.post('http://localhost:3001/todos', { task: newTodo, description: 'No description provided' })
+    if (!newTodo.trim()) {
+      alert('Task cannot be empty!');
+      return;
+    }
+
+    axios.post('http://localhost:3001/todos', {
+      task: newTodo,
+      description: 'No description provided',
+    })
       .then(response => {
-        setTodos([...todos, response.data]); // Add the new todo to the state
-        setNewTodo(''); // Clear the input field
+        setTodos([...todos, response.data]);
+        setNewTodo('');
       })
-      .catch(error => {
-        console.error("There was an error adding the todo!", error);
-      });
+      .catch(error => console.error('Error adding todo:', error));
   };
 
   return (
-    <>
-      <input 
-        type="text" 
-        value={newTodo} 
-        onChange={(e) => setNewTodo(e.target.value)} 
-        placeholder="Add a new todo" 
+    <div>
+      <h1>Todo List</h1>
+
+      {/* Input for adding new todos */}
+      <input
+        type="text"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+        placeholder="Add a new todo"
       />
       <button onClick={addTodo}>Add Todo</button>
-      
+
+      {/* Display list of todos */}
       <ul>
         {todos.map(todo => (
           <li key={todo.id}>
@@ -48,18 +53,8 @@ function App() {
           </li>
         ))}
       </ul>
-    </>
-  );
-}
-
-function Todo({ title, description }) {
-  return (
-    <div>
-      <h1>{title}</h1>
-      <p>{description}</p>
     </div>
   );
 }
 
 export default App;
-
