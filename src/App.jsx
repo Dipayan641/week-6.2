@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     // Get todos from the server
-    axios.get("http://localhost:3000/todos")
+    axios.get("http://localhost:3001/todos")
       .then(function(response) {
         setTodos(response.data); // The response directly contains the todos array
       })
@@ -20,7 +20,7 @@ function App() {
 
   const addTodo = () => {
     // Post new todo to the server
-    axios.post('http://localhost:3000/todos', { task: newTodo, description: 'No description provided' })
+    axios.post('http://localhost:3001/todos', { task: newTodo, description: 'No description provided' })
       .then(response => {
         setTodos([...todos, response.data]); // Add the new todo to the state
         setNewTodo(''); // Clear the input field
