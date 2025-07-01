@@ -5,7 +5,7 @@ const port =3001;
 
 
 // Middleware to handle CORS and parse incoming JSON bodies
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 // In-memory store for todos (this will reset every time the server restarts)
