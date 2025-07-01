@@ -2,25 +2,29 @@ import express from 'express';
 import cors from 'cors';
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
-// Middleware
-app.use(cors()); // Enable CORS for all origins
-app.use(express.json()); // Parse incoming JSON bodies
+// Configure CORS to allow requests from your frontend's origin
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with your frontend's origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
+  allowedHeaders: ['Content-Type'], // Allow specific headers
+}));
+
+// Middleware to parse incoming JSON bodies
+app.use(express.json());
 
 // In-memory todos (resets when the server restarts)
 let todos = [
   { id: 1, task: "Buy groceries", description: "Purchase essential food items.", completed: false },
   { id: 2, task: "Do laundry", description: "Wash clothes and fold them.", completed: false },
-  { id: 3, task: "Read a book", description: "Relax with your favorite book.", completed: false },
 ];
 
-// Get all todos
+// Routes
 app.get('/todos', (req, res) => {
-  res.json(todos); // Return the todos array
+  res.json(todos);
 });
 
-// Add a new todo
 app.post('/todos', (req, res) => {
   const { task, description } = req.body;
 
@@ -36,27 +40,7 @@ app.post('/todos', (req, res) => {
   };
 
   todos.push(newTodo);
-  res.status(201).json(newTodo); // Return the created todo
-});
-
-// Update a todo's completion status
-app.put('/todos/:id', (req, res) => {
-  const todoId = parseInt(req.params.id);
-  const todo = todos.find(t => t.id === todoId);
-
-  if (!todo) {
-    return res.status(404).json({ error: 'Todo not found.' });
-  }
-
-  todo.completed = req.body.completed;
-  res.json(todo); // Return the updated todo
-});
-
-// Delete a todo
-app.delete('/todos/:id', (req, res) => {
-  const todoId = parseInt(req.params.id);
-  todos = todos.filter(t => t.id !== todoId);
-  res.status(204).end(); // Respond with no content
+  res.status(201).json(newTodo);
 });
 
 // Start the server
