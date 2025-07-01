@@ -6,9 +6,7 @@ const port = 3000;
 
 // Configure CORS to allow requests from your frontend's origin
 app.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend's origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
-  allowedHeaders: ['Content-Type'], // Allow specific headers
+  origin: '*', // Allow all origins
 }));
 
 // Middleware to parse incoming JSON bodies
