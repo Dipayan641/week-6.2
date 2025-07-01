@@ -4,9 +4,7 @@ This is a simple Node.js/Express backend API, deployed live on the internet usin
 - Learning backend deployment
 - Building REST APIs
 - Connecting to databases (PostgreSQL/MongoDB)
-- Testing CI/CD pipelines
-
----
+- Testing CI/CD pipeline
 
 # React + Vite
 
