@@ -8,7 +8,7 @@ function App() {
   const [description, setDescription] = useState('');
 
   // API base URL
-  const API_URL = 'http://localhost:3000/todos';
+  const API_URL = 'http://localhost:3001/todos';
 
   // Fetch todos from the backend
   const fetchTodos = async () => {
