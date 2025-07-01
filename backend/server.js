@@ -1,13 +1,22 @@
 import express from 'express';
 import cors from 'cors';
-const app = express();
-const port = 3001;
 
-// Middleware to handle CORS and parse incoming JSON bodies
-app.use(cors({ origin: 'http://localhost:5173' }));
+const app = express();
+const port = 3000; // Changed from 3001 to 3000
+
+// Enhanced CORS configuration
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 
-// In-memory store for todos (this will reset every time the server restarts)
+// In-memory store for todos
 let todos = [
   { id: 1, task: "Buy groceries", description: "Purchase essential food items, including vegetables, fruits, dairy products, and snacks.", completed: false },
   { id: 2, task: "Do laundry", description: "Wash clothes and other household laundry. Don't forget to fold and organize after drying.", completed: false },
@@ -23,54 +32,76 @@ let todos = [
 
 // Route to get the list of todos
 app.get('/todos', (req, res) => {
-  res.json(todos);  // Return the array of todos
+  res.json(todos);
 });
 
 // Route to add a new todo
 app.post('/todos', (req, res) => {
   const { task, description } = req.body;
 
-  // Validate input
-  if (!task || !description) {
-    return res.status(400).json({ error: 'Task and description are required' });
+  if (!task) {
+    return res.status(400).json({ error: 'Task is required' });
   }
 
   const newTodo = {
-    id: todos.length + 1,
-    task: task,
-    description: description,
+    id: todos.length > 0 ? Math.max(...todos.map(t => t.id)) + 1 : 1,
+    task,
+    description: description || 'No description provided',
     completed: false,
   };
 
   todos.push(newTodo);
-  res.status(201).json(newTodo);  // Return the created todo
+  res.status(201).json(newTodo);
 });
 
 // Route to update a todo's completion status
 app.put('/todos/:id', (req, res) => {
-  const todoId = parseInt(req.params.id);
-  const todo = todos.find(t => t.id === todoId);
+  const id = parseInt(req.params.id);
+  const todoIndex = todos.findIndex(t => t.id === id);
 
-  if (todo) {
-    todo.completed = req.body.completed;
-    res.json(todo);  // Return the updated todo
-  } else {
-    res.status(404).send('Todo not found');
+  if (todoIndex === -1) {
+    return res.status(404).json({ error: 'Todo not found' });
   }
+
+  if (req.body.completed !== undefined) {
+    todos[todoIndex].completed = req.body.completed;
+  }
+
+  if (req.body.task) {
+    todos[todoIndex].task = req.body.task;
+  }
+
+  if (req.body.description) {
+    todos[todoIndex].description = req.body.description;
+  }
+
+  res.json(todos[todoIndex]);
 });
+
 // Get a specific todo by ID
 app.get('/todos/:id', (req, res) => {
-  const todo = todos.find(t => t.id === parseInt(req.params.id));
+  const id = parseInt(req.params.id);
+  const todo = todos.find(t => t.id === id);
+  
   if (!todo) {
-    return res.status(404).send('Todo not found');
+    return res.status(404).json({ error: 'Todo not found' });
   }
+  
   res.json(todo);
 });
+
 // Route to delete a todo
 app.delete('/todos/:id', (req, res) => {
-  const todoId = parseInt(req.params.id);
-  todos = todos.filter(t => t.id !== todoId);
-  res.status(204).end();  // Respond with no content after deletion
+  const id = parseInt(req.params.id);
+  const initialLength = todos.length;
+  
+  todos = todos.filter(t => t.id !== id);
+  
+  if (todos.length === initialLength) {
+    return res.status(404).json({ error: 'Todo not found' });
+  }
+  
+  res.status(204).send();
 });
 
 // Start the server
