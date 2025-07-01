@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     // Get todos from the server
-    axios.get("http://localhost:4000/todos")
+    axios.get("http://localhost:3000/todos")
       .then(function(response) {
         setTodos(response.data); // The response directly contains the todos array
       })
