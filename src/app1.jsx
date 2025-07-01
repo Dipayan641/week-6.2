@@ -23,7 +23,7 @@ function Todo({ id }) {
 
   useEffect(() => {
     setTimeout(()=>{
-      axios.get(`http://localhost:3000/todos/${id}`)  // Use URL parameters correctly
+      axios.get(`http://localhost:3001/todos/${id}`)  // Use URL parameters correctly
       .then(response => {
         setTodo(response.data);  // The response contains the data directly
       })
